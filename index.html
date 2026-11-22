@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دفترچه متن ساده</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    textarea {
+      flex: 1;
+      width: 100%;
+      min-height: 70vh;
+      resize: vertical;
+      padding: 18px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #111827;
+      font: 17px/1.8 Tahoma, Arial, sans-serif;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: #64748b;
+      box-shadow: 0 0 0 3px rgba(100,116,139,.15);
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font: 15px Tahoma, Arial, sans-serif;
+      cursor: pointer;
+    }
+    #copyBtn { background: #2563eb; color: white; }
+    #clearBtn { background: #e5e7eb; color: #111827; }
+    button:hover { filter: brightness(.95); }
+    #status { min-height: 20px; color: #475569; font-size: 13px; }
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .actions button { flex: 1; padding: 12px 8px; }
+      textarea { min-height: 75vh; }
+    }
+  </style>
+</head>
+<body>
+  <textarea id="textBox" placeholder="متن خود را اینجا وارد کنید..." autofocus></textarea>
+
+  <div class="actions">
+    <button id="copyBtn" type="button">کپی متن</button>
+    <button id="clearBtn" type="button">پاک کردن صفحه</button>
+  </div>
+  <div id="status" aria-live="polite"></div>
+
+  <script>
+    const textBox = document.getElementById('textBox');
+    const status = document.getElementById('status');
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      textBox.value = '';
+      status.textContent = 'متن پاک شد.';
+      textBox.focus();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      if (!textBox.value) {
+        status.textContent = 'متنی برای کپی کردن وجود ندارد.';
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(textBox.value);
+        status.textContent = 'متن با موفقیت کپی شد.';
+      } catch (err) {
+        textBox.focus();
+        textBox.select();
+        const copied = document.execCommand('copy');
+        status.textContent = copied
+          ? 'متن کپی شد.'
+          : 'کپی خودکار انجام نشد؛ متن انتخاب شده است. کلیدهای Ctrl+C را بزنید.';
+      }
+    });
+  </script>
+</body>
+</html>
